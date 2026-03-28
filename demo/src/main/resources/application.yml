@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update # Tabloları otomatik günceller
+    show-sql: false # Canlı sunucuda performansı düşürmemesi için bunu false yapmamız daha profesyoneldir
+    properties:
+      hibernate:
+        format_sql: true

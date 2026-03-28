@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/portfolio_db
+    username: postgres
+    password: 123
+  jpa:
+    hibernate:
+      ddl-auto: update # Entity'lerdeki de?i?iklikleri veritaban?na otomatik yans?t?r
+    show-sql: true # Arka planda �al??an SQL sorgular?n? konsolda g�rmemizi sa?lar
+    properties:
+      hibernate:
+        format_sql: true
