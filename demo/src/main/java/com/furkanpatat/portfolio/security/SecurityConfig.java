@@ -58,10 +58,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // İzin verilen linkler (Localhost ve Vercel linkini buraya yazıyoruz)
+        // İzin verilen linkleri (Localhost, Vercel ve Yeni Domain) buraya yazıyoruz
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
-                "https://furkanpatat.vercel.app" // Vercel linkin farklıysa burayı güncellersin
+                "https://portfolio-frontend-livid-xi.vercel.app", // Vercel'in orijinal linki
+                "https://furkanpatat.com",                        // YENİ ALAN ADIN
+                "https://www.furkanpatat.com"                     // YENİ ALAN ADININ WWW'LU HALİ
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
