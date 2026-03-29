@@ -15,6 +15,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+// CORS için eklenen importlar:
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -26,7 +32,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configure(http))
+                // BURAYI GÜNCELLEDİK: Artık aşağıdaki corsConfigurationSource metoduna bakacak
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         // HERKESE AÇIK (PUBLIC) UÇ NOKTALAR:
                         .requestMatchers("/api/auth/login").permitAll()
@@ -47,21 +54,36 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Şifreleri çözülemez BCrypt algoritmasıyla veri tabanına kaydetmek için
+    // CORS İZİNLERİNİ BURADA TANIMLIYORUZ
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // İzin verilen linkler (Localhost ve Vercel linkini buraya yazıyoruz)
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "https://furkanpatat.vercel.app" // Vercel linkin farklıysa burayı güncellersin
+        ));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // ÇOK ÖNEMLİ: Proje ilk kez ayağa kalktığında veritabanında hiç admin yoksa,
-    // otomatik olarak furkan kullanıcısını oluşturur.
     @Bean
     public CommandLineRunner initAdmin(AdminUserRepository repository, PasswordEncoder passwordEncoder) {
         return args -> {
             if (repository.count() == 0) {
                 AdminUser admin = AdminUser.builder()
                         .username("furkan")
-                        .password(passwordEncoder.encode("12345")) // Varsayılan Şifre: 12345
+                        .password(passwordEncoder.encode("12345"))
                         .build();
                 repository.save(admin);
                 System.out.println("✅ Sistem başlatıldı. Varsayılan Admin eklendi! Kullanıcı adı: furkan | Şifre: 12345");
